@@ -1,12 +1,27 @@
 import { Image, StyleSheet, Platform } from 'react-native';
+import { Link } from 'expo-router';
+import { useEffect } from 'react';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Link } from 'expo-router';
 
 export default function HomeScreen() {
+  // 웹에서만 메타데이터 설정 (SSR)
+  useEffect(() => {
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.title = 'Welcome - Expo Router App';
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', 'Welcome to Expo Router App with React Native and Web support');
+    }
+  }, []);
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -54,6 +69,12 @@ export default function HomeScreen() {
 
 
       <Link href="/home">Home</Link>
+      <ThemedView style={styles.ssrLinks}>
+        <ThemedText type="subtitle">SSR 예시 페이지:</ThemedText>
+        <Link href="/ssr-example">SSR 기본 예시</Link>
+        <Link href="/api-example">SSR + CSR 조합</Link>
+        <Link href="/posts/1">동적 라우트 예시</Link>
+      </ThemedView>
     </ParallaxScrollView>
   );
 }
@@ -74,5 +95,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  ssrLinks: {
+    marginTop: 20,
+    gap: 8,
   },
 });
